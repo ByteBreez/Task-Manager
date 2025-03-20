@@ -95,17 +95,42 @@ app.post("/api/auth/login", async (req, res) => {
   }
 });
 
-// Create task
+// Create task (Updated with notification_count and immediate notification logic)
 app.post("/api/tasks", authenticateToken, async (req, res) => {
-  const { user_id, title, description, deadline, color, status } = req.body;
+  const { user_id, title, description, deadline, color, status, reminder_minutes } = req.body;
   try {
+    // Insert the new task with notification_count initialized to 0
     const result = await pool.query(
-      "INSERT INTO tasks (user_id, title, description, deadline, color, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
-      [user_id, title, description, deadline, color, status]
+      "INSERT INTO tasks (user_id, title, description, deadline, color, status, reminder_minutes, notification_count) VALUES ($1, $2, $3, $4, $5, $6, $7, 0) RETURNING *",
+      [user_id, title, description, deadline, color, status, reminder_minutes]
     );
+    const newTask = result.rows[0];
+
+    // Notify all clients about the new task
     io.emit("notification", `New task added: ${title}`);
-    res.json(result.rows[0]);
+
+    // Check if the deadline is less than 15 minutes from now
+    const now = new Date();
+    const deadlineDate = new Date(newTask.deadline);
+    const timeDifferenceMinutes = (deadlineDate - now) / (1000 * 60); // Convert milliseconds to minutes
+
+    if (timeDifferenceMinutes > 0 && timeDifferenceMinutes < 15) {
+      // Send an immediate notification if the deadline is within 15 minutes
+      io.emit(
+        "notification",
+        `Reminder: Task "${newTask.title}" is due soon! Deadline: ${deadlineDate.toLocaleString()}`
+      );
+      // Update reminded_at and increment notification_count
+      await pool.query(
+        "UPDATE tasks SET reminded_at = NOW(), notification_count = notification_count + 1 WHERE id = $1",
+        [newTask.id]
+      );
+    }
+
+    // Return the newly created task
+    res.json(newTask);
   } catch (err) {
+    console.error("Error creating task:", err);
     res.status(500).json({ message: "Error creating task" });
   }
 });
@@ -126,48 +151,31 @@ app.get("/api/tasks", authenticateToken, async (req, res) => {
 // Update task (supports partial updates)
 app.put("/api/tasks/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
-  const { title, description, deadline, color, status } = req.body;
+  const { title, description, deadline, color, status, reminder_minutes } = req.body;
   try {
     const currentTask = await pool.query(
       "SELECT * FROM tasks WHERE id = $1 AND user_id = $2",
       [id, req.user.id]
     );
     if (currentTask.rowCount === 0) {
-      return res
-        .status(404)
-        .json({ message: "Task not found or unauthorized" });
+      return res.status(404).json({ message: "Task not found or unauthorized" });
     }
 
     const updatedTask = {
       title: title !== undefined ? title : currentTask.rows[0].title,
-      description:
-        description !== undefined
-          ? description
-          : currentTask.rows[0].description,
-      deadline:
-        deadline !== undefined ? deadline : currentTask.rows[0].deadline,
+      description: description !== undefined ? description : currentTask.rows[0].description,
+      deadline: deadline !== undefined ? deadline : currentTask.rows[0].deadline,
       color: color !== undefined ? color : currentTask.rows[0].color,
       status: status !== undefined ? status : currentTask.rows[0].status,
+      reminder_minutes: reminder_minutes !== undefined ? reminder_minutes : currentTask.rows[0].reminder_minutes,
     };
 
     const result = await pool.query(
-      "UPDATE tasks SET title = $1, description = $2, deadline = $3, color = $4, status = $5 WHERE id = $6 AND user_id = $7 RETURNING *",
-      [
-        updatedTask.title,
-        updatedTask.description,
-        updatedTask.deadline,
-        updatedTask.color,
-        updatedTask.status,
-        id,
-        req.user.id,
-      ]
+      "UPDATE tasks SET title = $1, description = $2, deadline = $3, color = $4, status = $5, reminder_minutes = $6 WHERE id = $7 AND user_id = $8 RETURNING *",
+      [updatedTask.title, updatedTask.description, updatedTask.deadline, updatedTask.color, updatedTask.status, updatedTask.reminder_minutes, id, req.user.id]
     );
 
-    io
-      .emit
-      //   "notification",
-      //   `Task "${result.rows[0].title}" updated successfully ✔`
-      ();
+    io.emit("notification", `Task "${result.rows[0].title}" updated successfully ✔`);
     res.json(result.rows[0]);
   } catch (err) {
     console.error("Error updating task:", err);
@@ -184,31 +192,37 @@ app.delete("/api/tasks/:id", authenticateToken, async (req, res) => {
       [id, req.user.id]
     );
     if (result.rowCount === 0) {
-      return res
-        .status(404)
-        .json({ message: "Task not found or unauthorized" });
+      return res.status(404).json({ message: "Task not found or unauthorized" });
     }
-    // io.emit("notification", `Task ${id} deleted`);
+    io.emit("notification", `Task ${id} deleted`);
     res.json({ message: "Task deleted" });
   } catch (err) {
     res.status(500).json({ message: "Error deleting task" });
   }
 });
 
-// Cron job for task notifications
+// Cron job for task reminders (Updated with notification_count)
 cron.schedule("* * * * *", async () => {
   try {
     const result = await pool.query(
-      "SELECT * FROM tasks WHERE deadline <= NOW() + INTERVAL '1 hour' AND deadline > NOW() AND status = 'pending'"
+      `SELECT * FROM tasks 
+       WHERE deadline - INTERVAL '1 minute' * reminder_minutes <= NOW() 
+       AND deadline > NOW() 
+       AND status = 'pending' 
+       AND reminded_at IS NULL 
+       AND notification_count < 1`
     );
-    result.rows.forEach((task) => {
+    for (const task of result.rows) {
+      const minutesUntilDeadline = Math.ceil((new Date(task.deadline) - new Date()) / (1000 * 60));
       io.emit(
         "notification",
-        `Task "${task.title}" due in 1 hour: ${new Date(
-          task.deadline
-        ).toLocaleString()}`
+        `Reminder: Task "${task.title}" is due in ${minutesUntilDeadline} minutes! Deadline: ${new Date(task.deadline).toLocaleString()}`
       );
-    });
+      await pool.query(
+        "UPDATE tasks SET reminded_at = NOW(), notification_count = notification_count + 1 WHERE id = $1",
+        [task.id]
+      );
+    }
   } catch (err) {
     console.error("Cron job error:", err);
   }
