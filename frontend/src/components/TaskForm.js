@@ -26,9 +26,9 @@ const TaskForm = ({ setTasks, closeForm }) => {
 
   return (
     <Box component="form" onSubmit={handleSubmit} mb={2}>
-      <TextField label="Title" value={title} onChange={(e) => setTitle(e.target.value)} fullWidth margin="normal" />
+      <TextField label="Title" value={title} onChange={(e) => setTitle(e.target.value)} fullWidth margin="normal" required/>
       <TextField label="Description" value={description} onChange={(e) => setDescription(e.target.value)} fullWidth margin="normal" multiline rows={3} />
-      <TextField label="Deadline" type="datetime-local" value={deadline} onChange={(e) => setDeadline(e.target.value)} fullWidth margin="normal" InputLabelProps={{ shrink: true }} />
+      <TextField label="Deadline" type="datetime-local" value={deadline} onChange={(e) => setDeadline(e.target.value)} fullWidth margin="normal" InputLabelProps={{ shrink: true }} required/>
       <FormControl fullWidth margin="normal">
         <InputLabel>Color</InputLabel>
         <Select value={color} onChange={(e) => setColor(e.target.value)}>
