@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from "react";
 import {
   AppBar,
   Toolbar,
@@ -8,13 +8,15 @@ import {
   Menu,
   MenuItem,
   Badge,
-} from '@mui/material';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import { Link } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
-import io from 'socket.io-client';
+} from "@mui/material";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import { Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+import io from "socket.io-client";
 
-const socket = io('http://localhost:5000', { transports: ['websocket', 'polling'] });
+const socket = io("http://localhost:5000", {
+  transports: ["websocket", "polling"],
+});
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
@@ -23,14 +25,14 @@ const Navbar = () => {
 
   // Set up socket listener for notifications
   useEffect(() => {
-    socket.on('notification', (message) => {
+    socket.on("notification", (message) => {
       setNotifications((prev) => [
         { id: Date.now(), message, timestamp: new Date().toLocaleString() },
         ...prev,
       ]);
     });
 
-    return () => socket.off('notification');
+    return () => socket.off("notification");
   }, []);
 
   // Handle notification menu
@@ -50,7 +52,11 @@ const Navbar = () => {
   return (
     <AppBar position="static">
       <Toolbar>
-        <Typography variant="h6" style={{ flexGrow: 1 }} sx={{ color: 'white' }}>
+        <Typography
+          variant="h4"
+          style={{ flexGrow: 1 }}
+          sx={{ color: "white" }}
+        >
           Task Manager
         </Typography>
         {user ? (
@@ -68,7 +74,12 @@ const Navbar = () => {
               open={Boolean(anchorEl)}
               onClose={handleMenuClose}
               PaperProps={{
-                style: { maxHeight: 300, width: 300, backgroundColor: '#1d1d1d', color: 'white' },
+                style: {
+                  maxHeight: 300,
+                  width: 300,
+                  backgroundColor: "#1d1d1d",
+                  color: "white",
+                },
               }}
             >
               {notifications.length === 0 ? (
