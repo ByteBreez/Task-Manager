@@ -9,14 +9,14 @@ import {
   Box,
 } from '@mui/material';
 import { toast } from 'react-toastify';
-import { jwtDecode } from 'jwt-decode'; // Use named export
+import { jwtDecode } from 'jwt-decode';
 
 const TaskForm = ({ setTasks, closeForm }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [reminderMinutes, setReminderMinutes] = useState(60); // Default to 1 hour
   const [deadline, setDeadline] = useState('');
   const [color, setColor] = useState('#ffffff');
-  const [reminderMinutes, setReminderMinutes] = useState(60); // Default to 1 hour
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -85,6 +85,19 @@ const TaskForm = ({ setTasks, closeForm }) => {
         rows={3}
         sx={{ input: { color: 'white' }, label: { color: 'white' } }}
       />
+      <FormControl fullWidth margin="normal">
+        <InputLabel sx={{ color: 'white' }}>Remind Me</InputLabel>
+        <Select
+          value={reminderMinutes}
+          onChange={(e) => setReminderMinutes(e.target.value)}
+          sx={{ color: 'white' }}
+        >
+          <MenuItem value={15}>15 minutes before</MenuItem>
+          <MenuItem value={30}>30 minutes before</MenuItem>
+          <MenuItem value={45}>45 minutes before</MenuItem>
+          <MenuItem value={60}>1 hour before</MenuItem>
+        </Select>
+      </FormControl>
       <TextField
         label="Deadline"
         type="datetime-local"
@@ -94,7 +107,11 @@ const TaskForm = ({ setTasks, closeForm }) => {
         margin="normal"
         InputLabelProps={{ shrink: true }}
         required
-        sx={{ input: { color: 'white' }, label: { color: 'white' } }}
+        sx={{
+          input: { color: 'white' },
+          label: { color: 'white' },
+          '& .MuiInputAdornment-root .MuiSvgIcon-root': { color: 'white' }, // Calendar icon
+        }}
       />
       <FormControl fullWidth margin="normal">
         <InputLabel sx={{ color: 'white' }}>Color</InputLabel>
@@ -107,19 +124,6 @@ const TaskForm = ({ setTasks, closeForm }) => {
           <MenuItem value="#ffcccc">Red</MenuItem>
           <MenuItem value="#ccffcc">Green</MenuItem>
           <MenuItem value="#ccccff">Blue</MenuItem>
-        </Select>
-      </FormControl>
-      <FormControl fullWidth margin="normal">
-        <InputLabel sx={{ color: 'white' }}>Remind Me</InputLabel>
-        <Select
-          value={reminderMinutes}
-          onChange={(e) => setReminderMinutes(e.target.value)}
-          sx={{ color: 'white' }}
-        >
-          <MenuItem value={15}>15 minutes before</MenuItem>
-          <MenuItem value={30}>30 minutes before</MenuItem>
-          <MenuItem value={45}>45 minutes before</MenuItem>
-          <MenuItem value={60}>1 hour before</MenuItem>
         </Select>
       </FormControl>
       <Box mt={2}>

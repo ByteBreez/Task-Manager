@@ -1,5 +1,4 @@
-// src/components/EditTaskModal.js
-import React from 'react';
+import React from "react";
 import {
   Modal,
   Box,
@@ -10,25 +9,25 @@ import {
   InputLabel,
   Select,
   MenuItem,
-} from '@mui/material';
+} from "@mui/material";
 
 const EditTaskModal = ({ open, onClose, task, onSubmit }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(task, true); // Pass the current task state and submit=true
+    onSubmit(task, true);
   };
 
   return (
     <Modal open={open} onClose={onClose}>
       <Box
         sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
           width: 400,
-          bgcolor: '#1d1d1d',
-          color: 'white',
+          bgcolor: "#1d1d1d",
+          color: "white",
           boxShadow: 24,
           p: 4,
           borderRadius: 2,
@@ -42,52 +41,34 @@ const EditTaskModal = ({ open, onClose, task, onSubmit }) => {
             <TextField
               label="Title"
               value={task.title}
-              onChange={(e) => onSubmit({ ...task, title: e.target.value }, false)}
+              onChange={(e) =>
+                onSubmit({ ...task, title: e.target.value }, false)
+              }
               fullWidth
               margin="normal"
               required
-              sx={{ input: { color: 'white' }, label: { color: 'white' } }}
+              sx={{ input: { color: "white" }, label: { color: "white" } }}
             />
             <TextField
               label="Description"
-              value={task.description || ''}
-              onChange={(e) => onSubmit({ ...task, description: e.target.value }, false)}
+              value={task.description || ""}
+              onChange={(e) =>
+                onSubmit({ ...task, description: e.target.value }, false)
+              }
               fullWidth
               margin="normal"
               multiline
               rows={3}
-              sx={{ input: { color: 'white' }, label: { color: 'white' } }}
-            />
-            <TextField
-              label="Deadline"
-              type="datetime-local"
-              value={task.deadline}
-              onChange={(e) => onSubmit({ ...task, deadline: e.target.value }, false)}
-              fullWidth
-              margin="normal"
-              InputLabelProps={{ shrink: true }}
-              required
-              sx={{ input: { color: 'white' }, label: { color: 'white' } }}
+              sx={{ input: { color: "white" }, label: { color: "white" } }}
             />
             <FormControl fullWidth margin="normal">
-              <InputLabel sx={{ color: 'white' }}>Color</InputLabel>
-              <Select
-                value={task.color}
-                onChange={(e) => onSubmit({ ...task, color: e.target.value }, false)}
-                sx={{ color: 'white' }}
-              >
-                <MenuItem value="#ffffff">White</MenuItem>
-                <MenuItem value="#ffcccc">Red</MenuItem>
-                <MenuItem value="#ccffcc">Green</MenuItem>
-                <MenuItem value="#ccccff">Blue</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl fullWidth margin="normal">
-              <InputLabel sx={{ color: 'white' }}>Remind Me</InputLabel>
+              <InputLabel sx={{ color: "white" }}>Remind Me</InputLabel>
               <Select
                 value={task.reminder_minutes || 60}
-                onChange={(e) => onSubmit({ ...task, reminder_minutes: e.target.value }, false)}
-                sx={{ color: 'white' }}
+                onChange={(e) =>
+                  onSubmit({ ...task, reminder_minutes: e.target.value }, false)
+                }
+                sx={{ color: "white" }}
               >
                 <MenuItem value={15}>15 minutes before</MenuItem>
                 <MenuItem value={30}>30 minutes before</MenuItem>
@@ -95,6 +76,25 @@ const EditTaskModal = ({ open, onClose, task, onSubmit }) => {
                 <MenuItem value={60}>1 hour before</MenuItem>
               </Select>
             </FormControl>
+            <TextField
+              label="Deadline"
+              type="datetime-local"
+              value={task.deadline}
+              onChange={(e) =>
+                onSubmit({ ...task, deadline: e.target.value }, false)
+              }
+              fullWidth
+              margin="normal"
+              InputLabelProps={{ shrink: true }}
+              required
+              sx={{
+                input: { color: "white" },
+                label: { color: "white" },
+                "& .MuiInputAdornment-root .MuiSvgIcon-root": {
+                  color: "white",
+                },
+              }}
+            />
             <Box mt={2}>
               <Button type="submit" variant="contained" color="primary">
                 Save Changes
