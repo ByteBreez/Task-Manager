@@ -9,6 +9,7 @@ import {
   Box,
 } from '@mui/material';
 import { toast } from 'react-toastify';
+import { jwtDecode } from 'jwt-decode'; // Use named export
 
 const TaskForm = ({ setTasks, closeForm }) => {
   const [title, setTitle] = useState('');
@@ -19,8 +20,21 @@ const TaskForm = ({ setTasks, closeForm }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Decode the JWT to get the user ID
+    const token = localStorage.getItem('token');
+    let userId;
+    try {
+      const decoded = jwtDecode(token);
+      userId = decoded.id; // Assumes your JWT payload has an 'id' field
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      toast.error('Invalid token. Please log in again.');
+      return;
+    }
+
     const newTask = {
-      user_id: JSON.parse(atob(localStorage.getItem('token').split('.')[1])).id, // Extract user ID from token
+      user_id: userId,
       title,
       description,
       deadline,
@@ -34,7 +48,7 @@ const TaskForm = ({ setTasks, closeForm }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(newTask),
       });
