@@ -15,7 +15,6 @@ router.post("/", authenticateToken, async (req, res) => {
     );
     const newTask = result.rows[0];
 
-    // Notify via Socket.io (to be connected later)
     req.io.emit("notification", `New task added: ${title}`);
 
     const now = new Date();
