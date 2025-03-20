@@ -13,7 +13,6 @@ import AddIcon from '@mui/icons-material/Add';
 import io from 'socket.io-client';
 import { toast } from 'react-toastify';
 import TaskForm from '../components/TaskForm';
-import TaskCard from '../components/TaskCard';
 import TaskSection from '../components/TaskSection'; // Updated import
 import EditTaskModal from '../components/EditTaskModal';
 import { AuthContext } from '../context/AuthContext';
