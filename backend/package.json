@@ -17,6 +17,7 @@
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "node-cron": "^3.0.3",
+    "nodemailer": "^6.10.0",
     "pg": "^8.14.1",
     "socket.io": "^4.8.1"
   }
