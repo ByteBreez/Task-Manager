@@ -1,8 +1,9 @@
 # Task Management App with Notifications
 
 ## Overview
-This project is a task management system designed to help users create, update, and track tasks while receiving timely notifications for upcoming deadlines. Built as a full-stack application, it features a React.js frontend with Material-UI styling, a Node.js backend with Express, and a PostgreSQL database for persistent storage. The app is deployed on Google Cloud Platform (GCP) using Cloud Storage for the frontend and Cloud Run for the backend, leveraging real-time notifications via Socket.io.
-
+Task Management App is a Fullstack Task Management Application that allows users to create, update, and track tasks while receiving timely notifications for upcoming deadlines. Users can register and log in, assign deadlines, and get real-time alerts.
+Video Link: https://drive.google.com/file/d/1C5nghm1wiQG0Bvd98uJ-J6HucWQUc_4k/view?usp=sharing (5mins)
+Full guide of the app: https://drive.google.com/file/d/1htb6hRA_4cOdAonup2ZZOthsAsnHXhjX/view?usp=sharing  (10mins)
 ---
 
 ## Tech Choices
