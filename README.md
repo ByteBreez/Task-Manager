@@ -4,7 +4,7 @@
 Task Management App is a Fullstack Task Management Application that allows users to create, update, and track tasks while receiving timely notifications for upcoming deadlines. Users can register and log in, assign deadlines, and get real-time alerts.
 
 - Video Link: https://shorturl.at/17aVv (5mins) 
-- Full guide of the app: https://drive.google.com/file/d/1htb6hRA_4cOdAonup2ZZOthsAsnHXhjX/view?usp=sharing  (10mins)
+- Full guide of the app: https://shorturl.at/c7DHl  (10mins)
 
 ---
 
