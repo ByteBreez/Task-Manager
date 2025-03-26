@@ -10,19 +10,17 @@ Task Management App is a Fullstack Task Management Application that allows users
 
 ## Tech Choices
 
-### 1. Cloud Provider: Google Cloud Platform (GCP)
-- **Why**: GCP was chosen for its generous free tier (e.g., 2 million Cloud Run requests/month, 5 GB Cloud Storage), making it cost-effective for deployment. Cloud Run simplifies serverless backend hosting, and Cloud Storage is ideal for serving the static React frontend. Its beginner-friendly interface and unified services reduce complexity compared to alternatives like AWS or Azure.
-- **Usage**: The frontend is hosted on Cloud Storage, and the backend runs on Cloud Run.
 
-### 2. Database: PostgreSQL
+
+### 1. Database: PostgreSQL
 - **Why**: PostgreSQL was selected for its relational structure, which ensures fast, consistent queries for task deadlines—crucial for a task manager. It’s open-source, integrates seamlessly with Node.js via the `pg` library, and supports cron jobs for scheduled reminders, offering better data integrity than NoSQL options like MongoDB for this use case.
 - **Usage**: Stores user data (`users` table) and task details (`tasks` table).
 
-### 3. Backend: Node.js with Express
+### 2. Backend: Node.js with Express
 - **Why**: Node.js is lightweight, fast, and excels at real-time applications with Socket.io. Express provides a simple framework for RESTful APIs, and its ecosystem supports JWT authentication and PostgreSQL integration. It’s easy to containerize for Cloud Run deployment.
 - **Usage**: Manages API endpoints, user authentication, and real-time notifications.
 
-### 4. Frontend: React.js
+### 3. Frontend: React.js
 - **Why**: React.js offers a component-based architecture for a clean, user-friendly interface. Material-UI provides pre-built, customizable components for styling, and libraries like `react-toastify` enhance the notification experience. It builds into a static site, perfect for Cloud Storage.
 - **Usage**: Displays tasks, forms for task management, and real-time updates.
 
